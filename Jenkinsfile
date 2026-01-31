@@ -3,6 +3,11 @@ pipeline {
     // Change to specific labels when agents are set up
     agent any
 
+    // NodeJS tool - configure in Manage Jenkins > Tools > NodeJS
+    tools {
+        nodejs 'Node-18'
+    }
+
     triggers {
         githubPush()
     }
