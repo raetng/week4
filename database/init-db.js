@@ -69,7 +69,7 @@ async function initDatabase(shouldSeed = false) {
 
   // Show tables
   const tables = db.exec(
-    'SELECT name FROM sqlite_master WHERE type=\'table\' AND name NOT LIKE \'sqlite_%\''
+    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
   );
   if (tables.length > 0) {
     console.log('\nTables created:');
