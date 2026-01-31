@@ -37,9 +37,9 @@ export const options = {
       executor: 'ramping-vus',
       startVUs: 0,
       stages: [
-        { duration: '1m', target: 10 },   // Ramp up to 10 users
-        { duration: '2m', target: 10 },   // Stay at 10 users
-        { duration: '1m', target: 0 }    // Ramp down
+        { duration: '1m', target: 10 }, // Ramp up to 10 users
+        { duration: '2m', target: 10 }, // Stay at 10 users
+        { duration: '1m', target: 0 } // Ramp down
       ],
       startTime: '30s',
       tags: { test_type: 'load' }
@@ -53,26 +53,26 @@ export const options = {
   thresholds: {
     // HTTP request duration
     http_req_duration: [
-      'p(95)<500',    // 95% of requests must complete within 500ms
-      'p(99)<1000'   // 99% of requests must complete within 1s
+      'p(95)<500', // 95% of requests must complete within 500ms
+      'p(99)<1000' // 99% of requests must complete within 1s
     ],
 
     // Error rate
     errors: [
-      'rate<0.05'    // Error rate must be below 5%
+      'rate<0.05' // Error rate must be below 5%
     ],
 
     // Custom metric thresholds
     get_weather_duration: [
-      'p(95)<300'    // GET /weather: 95% under 300ms
+      'p(95)<300' // GET /weather: 95% under 300ms
     ],
     post_weather_duration: [
-      'p(95)<400'    // POST /weather: 95% under 400ms
+      'p(95)<400' // POST /weather: 95% under 400ms
     ],
 
     // HTTP failures
     http_req_failed: [
-      'rate<0.01'    // Less than 1% HTTP failures
+      'rate<0.01' // Less than 1% HTTP failures
     ]
   }
 };
@@ -96,7 +96,7 @@ function getRandomStation() {
 
 function getRandomConditions() {
   const result = {};
-  conditions.forEach(condition => {
+  conditions.forEach((condition) => {
     result[condition] = Math.random() > 0.7; // 30% chance of each condition
   });
   return result;
@@ -154,8 +154,7 @@ export default function (data) {
 
         check(getOneRes, {
           'GET /weather/:id status is 200': (r) => r.status === 200,
-          'GET /weather/:id returns correct id': (r) =>
-            JSON.parse(r.body).id === randomReport.id
+          'GET /weather/:id returns correct id': (r) => JSON.parse(r.body).id === randomReport.id
         });
       }
     }
@@ -199,8 +198,7 @@ export default function (data) {
 
     // Stats endpoint may return 404 if no data for station
     check(statsRes, {
-      'GET /stats/:station status is 200 or 404': (r) =>
-        r.status === 200 || r.status === 404,
+      'GET /stats/:station status is 200 or 404': (r) => r.status === 200 || r.status === 404,
       'GET /stats/:station response time < 500ms': (r) => r.timings.duration < 500
     });
   });
@@ -218,13 +216,11 @@ export function teardown(data) {
   const res = http.get(`${data.baseUrl}/weather`);
   if (res.status === 200) {
     const reports = JSON.parse(res.body);
-    const testReports = reports.filter(r =>
-      r.station && r.station.startsWith('PERF-')
-    );
+    const testReports = reports.filter((r) => r.station && r.station.startsWith('PERF-'));
 
     console.log(`Cleaning up ${testReports.length} test reports...`);
 
-    testReports.forEach(report => {
+    testReports.forEach((report) => {
       http.del(`${data.baseUrl}/weather/${report.id}`);
     });
   }
@@ -243,13 +239,13 @@ export function handleSummary(data) {
     p99ResponseTime: data.metrics.http_req_duration?.values['p(99)'] || 0,
     errorRate: data.metrics.errors?.values?.rate || 0,
     reportsCreated: data.metrics.reports_created?.values?.count || 0,
-    thresholdsPassed: !Object.values(data.metrics).some(m =>
-      m.thresholds && Object.values(m.thresholds).some(t => !t.ok)
+    thresholdsPassed: !Object.values(data.metrics).some(
+      (m) => m.thresholds && Object.values(m.thresholds).some((t) => !t.ok)
     )
   };
 
   return {
-    'stdout': textSummary(data, { indent: ' ', enableColors: true }),
+    stdout: textSummary(data, { indent: ' ', enableColors: true }),
     'tests/performance/summary.json': JSON.stringify(summary, null, 2),
     'tests/performance/full-results.json': JSON.stringify(data, null, 2)
   };

@@ -83,7 +83,7 @@ test.describe('Weather Reports User Journey', () => {
       expect(response.ok()).toBeTruthy();
 
       const reports = await response.json();
-      const ourReport = reports.find(r => r.station === testStation);
+      const ourReport = reports.find((r) => r.station === testStation);
 
       expect(ourReport).toBeDefined();
       expect(ourReport.rain).toBe(true);
@@ -130,7 +130,7 @@ test.describe('Weather Reports User Journey', () => {
       // The test station should no longer appear
       const response2 = await page.request.get('/weather');
       const reports = await response2.json();
-      const deletedReport = reports.find(r => r.station === testStation);
+      const deletedReport = reports.find((r) => r.station === testStation);
       expect(deletedReport).toBeUndefined();
     });
   });
@@ -173,7 +173,7 @@ test.describe('Weather Reports User Journey', () => {
     await test.step('Cleanup test data', async () => {
       const response = await page.request.get('/weather');
       const reports = await response.json();
-      const testReports = reports.filter(r => r.station === statsStation);
+      const testReports = reports.filter((r) => r.station === statsStation);
 
       for (const report of testReports) {
         await page.request.delete(`/weather/${report.id}`);

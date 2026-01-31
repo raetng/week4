@@ -68,10 +68,12 @@ async function initDatabase(shouldSeed = false) {
   console.log('='.repeat(50));
 
   // Show tables
-  const tables = db.exec('SELECT name FROM sqlite_master WHERE type=\'table\' AND name NOT LIKE \'sqlite_%\'');
+  const tables = db.exec(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+  );
   if (tables.length > 0) {
     console.log('\nTables created:');
-    tables[0].values.forEach(row => console.log(`  - ${row[0]}`));
+    tables[0].values.forEach((row) => console.log(`  - ${row[0]}`));
   }
 
   db.close();
@@ -81,7 +83,7 @@ async function initDatabase(shouldSeed = false) {
 const args = process.argv.slice(2);
 const shouldSeed = args.includes('--seed');
 
-initDatabase(shouldSeed).catch(err => {
+initDatabase(shouldSeed).catch((err) => {
   console.error('Fatal error:', err);
   process.exit(1);
 });

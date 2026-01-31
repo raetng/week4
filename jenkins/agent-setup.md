@@ -29,21 +29,23 @@ This document describes the Jenkins agent setup for the Weather Reports CI/CD pi
 
 ### Agent 1: Build Agent
 
-| Property | Value |
-|----------|-------|
-| **Name** | `build-agent-01` |
-| **Labels** | `build nodejs npm` |
-| **Description** | Handles application builds and artifact creation |
-| **# of Executors** | 2 |
-| **Remote Root Directory** | `/var/jenkins/build-agent` |
-| **Usage** | Only build jobs tied to this node |
+| Property                  | Value                                            |
+| ------------------------- | ------------------------------------------------ |
+| **Name**                  | `build-agent-01`                                 |
+| **Labels**                | `build nodejs npm`                               |
+| **Description**           | Handles application builds and artifact creation |
+| **# of Executors**        | 2                                                |
+| **Remote Root Directory** | `/var/jenkins/build-agent`                       |
+| **Usage**                 | Only build jobs tied to this node                |
 
 **Required Software:**
+
 - Node.js 18+ (LTS)
 - npm 9+
 - Git
 
 **Setup Commands:**
+
 ```bash
 # Install Node.js (Ubuntu/Debian)
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -58,16 +60,17 @@ npm --version
 
 ### Agent 2: Test Agent
 
-| Property | Value |
-|----------|-------|
-| **Name** | `test-agent-01` |
-| **Labels** | `test testing e2e performance` |
-| **Description** | Executes unit tests, E2E tests, and performance tests |
-| **# of Executors** | 2 |
-| **Remote Root Directory** | `/var/jenkins/test-agent` |
-| **Usage** | Only test jobs tied to this node |
+| Property                  | Value                                                 |
+| ------------------------- | ----------------------------------------------------- |
+| **Name**                  | `test-agent-01`                                       |
+| **Labels**                | `test testing e2e performance`                        |
+| **Description**           | Executes unit tests, E2E tests, and performance tests |
+| **# of Executors**        | 2                                                     |
+| **Remote Root Directory** | `/var/jenkins/test-agent`                             |
+| **Usage**                 | Only test jobs tied to this node                      |
 
 **Required Software:**
+
 - Node.js 18+ (LTS)
 - npm 9+
 - Playwright dependencies
@@ -75,6 +78,7 @@ npm --version
 - Git
 
 **Setup Commands:**
+
 ```bash
 # Install Node.js
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -97,22 +101,24 @@ sudo apt-get install k6
 
 ### Agent 3: Deploy Agent
 
-| Property | Value |
-|----------|-------|
-| **Name** | `deploy-agent-01` |
-| **Labels** | `deploy deployment production staging` |
-| **Description** | Handles deployments to staging and production |
-| **# of Executors** | 1 |
-| **Remote Root Directory** | `/var/jenkins/deploy-agent` |
-| **Usage** | Only deploy jobs tied to this node |
+| Property                  | Value                                         |
+| ------------------------- | --------------------------------------------- |
+| **Name**                  | `deploy-agent-01`                             |
+| **Labels**                | `deploy deployment production staging`        |
+| **Description**           | Handles deployments to staging and production |
+| **# of Executors**        | 1                                             |
+| **Remote Root Directory** | `/var/jenkins/deploy-agent`                   |
+| **Usage**                 | Only deploy jobs tied to this node            |
 
 **Required Software:**
+
 - Docker
 - kubectl (if using Kubernetes)
 - SSH access to deployment targets
 - Git
 
 **Setup Commands:**
+
 ```bash
 # Install Docker
 curl -fsSL https://get.docker.com | sh
@@ -152,19 +158,23 @@ Credentials:           <jenkins-ssh-credentials>
 ### Step 3: Agent Launch Methods
 
 **Option A: SSH (Recommended for Linux agents)**
+
 - Jenkins connects to agent via SSH
 - Requires SSH credentials configured in Jenkins
 - Agent starts automatically
 
 **Option B: JNLP (Java Web Start)**
+
 - Agent connects to controller
 - Run on agent machine:
+
 ```bash
 java -jar agent.jar -url http://jenkins-url/ \
     -secret <agent-secret> -name <agent-name> -workDir "/var/jenkins/agent"
 ```
 
 **Option C: Docker Agent**
+
 ```yaml
 # docker-compose.yml for Jenkins agent
 version: '3.8'
@@ -222,28 +232,30 @@ pipeline {
 
 ## Workload Distribution Strategy
 
-| Stage | Agent Label | Rationale |
-|-------|-------------|-----------|
-| Checkout | Any | Git clone is lightweight |
-| Install Dependencies | `build` | npm install requires disk I/O |
-| Build | `build` | Compilation/bundling |
-| Unit Tests | `test` | Isolated test environment |
-| E2E Tests | `test` | Browser automation requires setup |
-| Performance Tests | `test` | k6 load testing |
-| SonarQube Analysis | `build` | Code analysis |
-| Deploy to Staging | `deploy` | Deployment credentials |
-| Deploy to Production | `deploy` | Production access |
+| Stage                | Agent Label | Rationale                         |
+| -------------------- | ----------- | --------------------------------- |
+| Checkout             | Any         | Git clone is lightweight          |
+| Install Dependencies | `build`     | npm install requires disk I/O     |
+| Build                | `build`     | Compilation/bundling              |
+| Unit Tests           | `test`      | Isolated test environment         |
+| E2E Tests            | `test`      | Browser automation requires setup |
+| Performance Tests    | `test`      | k6 load testing                   |
+| SonarQube Analysis   | `build`     | Code analysis                     |
+| Deploy to Staging    | `deploy`    | Deployment credentials            |
+| Deploy to Production | `deploy`    | Production access                 |
 
 ---
 
 ## Monitoring Agent Status
 
 ### Jenkins UI
+
 - **Manage Jenkins** → **Nodes** shows all agents
 - Green = online, Red = offline
 - Click agent name for detailed status
 
 ### CLI Check
+
 ```bash
 # Using Jenkins CLI
 java -jar jenkins-cli.jar -s http://localhost:8080/ \
@@ -259,12 +271,14 @@ java -jar jenkins-cli.jar -s http://localhost:8080/ \
 ## Troubleshooting
 
 ### Agent Offline
+
 1. Check network connectivity between controller and agent
 2. Verify SSH credentials are valid
 3. Check agent logs: `/var/log/jenkins/agent.log`
 4. Restart agent service
 
 ### Build Stuck in Queue
+
 - Message: "Waiting for next available executor on build"
 - Solutions:
   1. Add more executors to agent
@@ -272,6 +286,7 @@ java -jar jenkins-cli.jar -s http://localhost:8080/ \
   3. Check if agent is offline
 
 ### Permission Errors
+
 ```bash
 # Fix workspace permissions
 sudo chown -R jenkins:jenkins /var/jenkins/build-agent
@@ -282,7 +297,7 @@ sudo chmod 755 /var/jenkins/build-agent
 
 ## Screenshots Reference
 
-*Note: Add screenshots to `docs/screenshots/` directory*
+_Note: Add screenshots to `docs/screenshots/` directory_
 
 1. `jenkins-agents-overview.png` - Nodes dashboard showing all agents
 2. `agent-configuration.png` - Agent configuration page
