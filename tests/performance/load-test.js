@@ -80,6 +80,7 @@ export const options = {
 // ============================================
 // Test Configuration
 // ============================================
+/* global __ENV */
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000';
 
 // Test data
@@ -255,7 +256,7 @@ export function handleSummary(data) {
 }
 
 // Text summary helper
-function textSummary(data, options) {
+function textSummary(data, _options) {
   const lines = [
     '\n' + '='.repeat(60),
     'PERFORMANCE TEST SUMMARY',
