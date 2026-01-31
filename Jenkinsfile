@@ -51,7 +51,14 @@ pipeline {
         // ============================================
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
+                sh '''
+                    echo "=== Workspace contents ==="
+                    ls -la
+                    echo "=== Checking config files ==="
+                    cat .eslintrc.json || echo "No .eslintrc.json found"
+                    echo "=== Installing dependencies ==="
+                    npm ci
+                '''
             }
         }
 
