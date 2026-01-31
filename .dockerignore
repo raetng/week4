@@ -1,0 +1,50 @@
+# Dependencies
+node_modules
+
+# Build artifacts
+dist
+*.tar.gz
+
+# Test & Coverage
+coverage
+playwright-report
+test-results
+k6-results.json
+*.test.js
+*.spec.js
+tests
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.*
+
+# Database (use volume instead)
+*.db
+
+# Documentation
+*.md
+docs
+
+# CI/CD files (not needed in container)
+Jenkinsfile
+sonar-project.properties
+docker-compose.yml
+.dockerignore

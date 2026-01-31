@@ -1,0 +1,83 @@
+# ============================================
+# Docker Compose Configuration
+# Weather Reports Application + SonarQube
+# ============================================
+
+version: '3.8'
+
+services:
+  # ============================================
+  # Weather Reports Application
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weather-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_PATH=/app/data/weather.db
+    volumes:
+      - app-data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/weather"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - weather-network
+    restart: unless-stopped
+
+  # ============================================
+  # SonarQube for Code Quality Analysis (Q5)
+  # Default credentials: admin/admin
+  # ============================================
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
+    networks:
+      - weather-network
+    restart: unless-stopped
+
+  # ============================================
+  # Development mode - app with live reload
+  # ============================================
+  app-dev:
+    image: node:18-alpine
+    container_name: weather-app-dev
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DB_PATH=/app/weather.db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm start"
+    networks:
+      - weather-network
+    profiles:
+      - dev
+
+networks:
+  weather-network:
+    driver: bridge
+
+volumes:
+  app-data:
+  sonarqube-data:
+  sonarqube-extensions:
+  sonarqube-logs:

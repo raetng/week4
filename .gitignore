@@ -1,2 +1,43 @@
-*.png
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+*.tar.gz
+build-info.json
+
+# Test & Coverage
+coverage/
+playwright-report/
+test-results/
+k6-results.json
+tests/performance/summary.json
+tests/performance/full-results.json
+
+# Database
+*.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.*
+
+# Screenshots (keep folder structure, ignore actual images)
+screenshots/*.png
+screenshots/*.jpg
+
+# PDFs
 *.pdf
