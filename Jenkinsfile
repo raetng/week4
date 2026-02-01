@@ -283,9 +283,9 @@ pipeline {
                 // Slack notification (if configured)
                 try {
                     slackSend(
-                        channel: '#deployments',
+                        channel: '#jenkins-bot',
                         color: 'good',
-                        message: "✅ *Build Successful* - ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${env.GIT_BRANCH_NAME}\n<${env.BUILD_URL}|View Build>"
+                        message: "*Build Successful* - ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${env.GIT_BRANCH_NAME}\n<${env.BUILD_URL}|View Build>"
                     )
                 } catch (Exception e) {
                     echo "Slack not configured - skipping notification"
@@ -299,9 +299,9 @@ pipeline {
                 // Slack notification (if configured)
                 try {
                     slackSend(
-                        channel: '#deployments',
+                        channel: '#jenkins-bot',
                         color: 'danger',
-                        message: "❌ *Build Failed* - ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${env.GIT_BRANCH_NAME}\n<${env.BUILD_URL}console|View Console>"
+                        message: "*Build Failed* - ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${env.GIT_BRANCH_NAME}\n<${env.BUILD_URL}console|View Console>"
                     )
                 } catch (Exception e) {
                     echo "Slack not configured - skipping notification"
