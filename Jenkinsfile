@@ -147,17 +147,10 @@ pipeline {
 
         // ============================================
         // STAGE: SonarQube Analysis (Q2: build agent, Q5)
+        // Runs on all branches for code quality feedback
         // ============================================
         stage('SonarQube Analysis') {
             agent { label 'build' }
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'master'
-                    branch 'develop'
-                    expression { env.GIT_BRANCH_NAME in ['main', 'master', 'develop'] }
-                }
-            }
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh """
