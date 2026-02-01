@@ -6,7 +6,44 @@ This document describes the Jenkins agent setup for the Weather Reports CI/CD pi
 
 ---
 
-## Agent Architecture
+## Current Local Development Setup
+
+For local development and demonstration, the **Built-In Node** is configured with multiple labels to handle all pipeline stages:
+
+### Built-In Node Configuration
+
+| Property | Value |
+|----------|-------|
+| **Name** | Built-In Node |
+| **Labels** | `build test deploy` |
+| **# of Executors** | 2 |
+| **Usage** | Use this node as much as possible |
+
+**Screenshot:** See `docs/screenshots/built-in-node-labels.png`
+
+### How Workload Distribution Works
+
+The Jenkinsfile specifies different agent labels for each stage:
+
+| Stage | Agent Label | Purpose |
+|-------|-------------|---------|
+| Checkout | `build` | Clone repository |
+| Install Dependencies | `build` | npm ci |
+| Lint & Format | `build` | Code quality checks |
+| Unit Tests | `test` | Jest test execution |
+| Build & Package | `build` | Create artifacts |
+| SonarQube Analysis | `build` | Code analysis |
+| E2E Tests | `test` | Playwright tests |
+| Performance Tests | `test` | k6 load tests |
+| Deploy to Staging | `deploy` | Deployment |
+
+Jenkins matches each stage's label requirement to available agents. In the local setup, the Built-In Node matches all labels. In production, these would be separate physical or virtual machines.
+
+---
+
+## Production Architecture (Recommended)
+
+In a production environment, workload should be distributed across multiple dedicated agents:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -25,7 +62,7 @@ This document describes the Jenkins agent setup for the Weather Reports CI/CD pi
 
 ---
 
-## Agent Configuration
+## Production Agent Configuration
 
 ### Agent 1: Build Agent
 

@@ -159,33 +159,16 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    // Check if SonarQube is configured
-                    def sonarConfigured = false
-                    try {
-                        withSonarQubeEnv('SonarQube') {
-                            sonarConfigured = true
-                        }
-                    } catch (Exception e) {
-                        echo "SonarQube not configured, skipping analysis"
-                    }
-
-                    if (sonarConfigured) {
-                        withSonarQubeEnv('SonarQube') {
-                            sh """
-                                sonar-scanner \
-                                    -Dsonar.projectKey=${env.APP_NAME} \
-                                    -Dsonar.projectName="${env.APP_NAME}" \
-                                    -Dsonar.projectVersion=${env.BUILD_VERSION ?: '1.0.0'} \
-                                    -Dsonar.sources=. \
-                                    -Dsonar.exclusions=node_modules/**,coverage/**,dist/**,tests/** \
-                                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                            """
-                        }
-                    } else {
-                        echo "SKIPPED: SonarQube not configured in Jenkins"
-                        echo "To enable: Manage Jenkins > Configure System > SonarQube servers"
-                    }
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                        ${tool('SonarScanner')}/bin/sonar-scanner \
+                            -Dsonar.projectKey=${env.APP_NAME} \
+                            -Dsonar.projectName="${env.APP_NAME}" \
+                            -Dsonar.projectVersion=${env.BUILD_VERSION ?: '1.0.0'} \
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=node_modules/**,coverage/**,dist/**,tests/**,playwright-report/** \
+                            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                    """
                 }
             }
         }
