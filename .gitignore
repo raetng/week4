@@ -42,4 +42,8 @@ screenshots/*.jpg
 # PDFs
 *.pdf
 
+# Reports
 Playwright Test Report.html
+
+# Local instructions (not for repo)
+instructions.md

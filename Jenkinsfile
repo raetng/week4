@@ -1,7 +1,7 @@
 pipeline {
-    // Use 'any' for local Jenkins without configured agents
-    // Change to specific labels when agents are set up
-    agent any
+    // Q2: Use labeled agents for workload distribution
+    // Each stage specifies which agent type to use
+    agent none
 
     // NodeJS tool - configure in Manage Jenkins > Tools > NodeJS
     tools {
@@ -26,9 +26,10 @@ pipeline {
 
     stages {
         // ============================================
-        // STAGE: Checkout
+        // STAGE: Checkout (Q2: build agent)
         // ============================================
         stage('Checkout') {
+            agent { label 'build' }
             steps {
                 checkout scm
                 script {
@@ -47,9 +48,10 @@ pipeline {
         }
 
         // ============================================
-        // STAGE: Install Dependencies
+        // STAGE: Install Dependencies (Q2: build agent)
         // ============================================
         stage('Install Dependencies') {
+            agent { label 'build' }
             steps {
                 sh '''
                     echo "=== Workspace contents ==="
@@ -63,9 +65,10 @@ pipeline {
         }
 
         // ============================================
-        // STAGE: Lint & Format Check
+        // STAGE: Lint & Format Check (Q2: build agent)
         // ============================================
         stage('Lint & Format') {
+            agent { label 'build' }
             steps {
                 sh 'npm run lint'
                 sh 'npm run format'
@@ -73,9 +76,10 @@ pipeline {
         }
 
         // ============================================
-        // STAGE: Unit Tests
+        // STAGE: Unit Tests (Q2: test agent)
         // ============================================
         stage('Unit Tests') {
+            agent { label 'test' }
             steps {
                 sh 'npm run test:ci'
             }
@@ -88,10 +92,11 @@ pipeline {
         }
 
         // ============================================
-        // STAGE: Build & Package (Q4)
+        // STAGE: Build & Package (Q2: build agent, Q4)
         // Only on main/master/develop
         // ============================================
         stage('Build & Package') {
+            agent { label 'build' }
             when {
                 anyOf {
                     branch 'main'
@@ -141,10 +146,10 @@ pipeline {
         }
 
         // ============================================
-        // STAGE: SonarQube Analysis (Q5)
-        // Uncomment when SonarQube is configured
+        // STAGE: SonarQube Analysis (Q2: build agent, Q5)
         // ============================================
         stage('SonarQube Analysis') {
+            agent { label 'build' }
             when {
                 anyOf {
                     branch 'main'
@@ -186,9 +191,10 @@ pipeline {
         }
 
         // ============================================
-        // STAGE: E2E Tests (Q7) - Main branch only
+        // STAGE: E2E Tests (Q2: test agent, Q7) - Main branch only
         // ============================================
         stage('E2E Tests') {
+            agent { label 'test' }
             when {
                 anyOf {
                     branch 'main'
@@ -215,9 +221,10 @@ pipeline {
         }
 
         // ============================================
-        // STAGE: Performance Tests (Q8) - Main branch only
+        // STAGE: Performance Tests (Q2: test agent, Q8) - Main branch only
         // ============================================
         stage('Performance Tests') {
+            agent { label 'test' }
             when {
                 anyOf {
                     branch 'main'
@@ -253,9 +260,10 @@ pipeline {
         }
 
         // ============================================
-        // STAGE: Deploy to Staging - Main branch only
+        // STAGE: Deploy to Staging (Q2: deploy agent) - Main branch only
         // ============================================
         stage('Deploy to Staging') {
+            agent { label 'deploy' }
             when {
                 anyOf {
                     branch 'main'
@@ -309,8 +317,10 @@ pipeline {
             }
         }
         always {
-            // Cleanup workspace
-            cleanWs(deleteDirs: true, disableDeferredWipeout: true, notFailBuild: true)
+            // Cleanup workspace on build agent
+            node('build') {
+                cleanWs(deleteDirs: true, disableDeferredWipeout: true, notFailBuild: true)
+            }
         }
     }
 }
