@@ -155,8 +155,8 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     sh """
                         ${tool('SonarScanner')}/bin/sonar-scanner \
-                            -Dsonar.projectKey=${env.APP_NAME} \
-                            -Dsonar.projectName="${env.APP_NAME}" \
+                            -Dsonar.projectKey=week4 \
+                            -Dsonar.projectName="week4" \
                             -Dsonar.projectVersion=${env.BUILD_VERSION ?: '1.0.0'} \
                             -Dsonar.sources=. \
                             -Dsonar.exclusions=node_modules/**,coverage/**,dist/**,tests/**,playwright-report/** \
